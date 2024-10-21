@@ -1,4 +1,4 @@
-# CSE 156 PA1: Movie Review Sentiment Analyzer using a DAN with feedforwarding neural network
+# Movie Review Sentiment Analyzer using a Deep Averaging Network with a Feed Forward Neural Network
 
 This repository contains a Deep Averaging Network (DAN) for sentiment analysis on movie reviews, utilizing GloVe word embeddings. The model is implemented using PyTorch and aims to classify movie reviews as positive or negative.
 
@@ -6,17 +6,16 @@ This repository contains a Deep Averaging Network (DAN) for sentiment analysis o
 
 To run the different models available in the repository, follow these instructions:
 
-1. **Part 2a - DAN (Deep Averaging Network):**
+1. **DAN (Deep Averaging Network) with GloVe word embeddings:**
    ```bash
    python main.py --model DAN
-```
 
-2. **Part 2b - Custom Embeddings DAN:**
-```bash
+2. **Custom Embeddings DAN (WIP):**
+   ```bash
     python main.py --model SUBWORDDAN
-```
 
-3. **Bag of Words:**
+
+3. **Bag of Words (BOW):**
 ```bash
     python main.py --model BOW
 ```
