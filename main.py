@@ -11,7 +11,7 @@ import argparse
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from BOWmodels import SentimentDatasetBOW, NN2BOW, NN3BOW
-from DANmodels import SentimentDatasetDAN, NN1DAN
+from DANmodels import SentimentDatasetDAN, NN1DAN, NNcustomDAN
 
 
 # Training function
@@ -148,7 +148,7 @@ def main():
     elif args.model == "DAN":
         
         # Load word embeddings
-        word_embeddings = read_word_embeddings("data/glove.6B.50d-relativized.txt")
+        word_embeddings = read_word_embeddings("data/glove.6B.300d-relativized.txt")
         #word_embeddings = read_word_embeddings("data/glove.6B.300d-relativized.txt")
         
         train_data = SentimentDatasetDAN("data/train.txt", word_embeddings)
@@ -156,53 +156,13 @@ def main():
         train_loader = DataLoader(train_data, batch_size=16, shuffle=True)
         test_loader = DataLoader(dev_data, batch_size=16, shuffle=False)
         
-        print(train_data)
-        print(train_loader)
-        
-        # Train and evaluate NN1
+        # Train and evaluate NN
         start_time = time.time()
-        print('\n1 layer:')
-        nn1_train_accuracy, nn1_test_accuracy = experiment(NN1DAN(word_embeddings.get_embedding_length(), 100, 1, word_embeddings), train_loader, test_loader)
-
-
+        print('\n2 layers:')
+        nn1_train_accuracy, nn1_test_accuracy = experiment(NN1DAN(word_embeddings.get_embedding_length(), 200, 1, word_embeddings), train_loader, test_loader)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        '''
-        # Load word embeddings
-        word_embeddings = read_word_embeddings("data/glove.6B.50d-relativized.txt")
-        
-        # Create the dataset
-        train_data = SentimentDatasetDAN("data/train.txt", word_embeddings)
-        dev_data = SentimentDatasetDAN("data/dev.txt", word_embeddings)
-        
-        # Create DataLoaders
-        train_loader = DataLoader(train_data, batch_size=16, shuffle=True)
-        test_loader = DataLoader(dev_data, batch_size=16, shuffle=False)
-        
-        # Initialize the DAN model
-        model = NN1DAN(embedding_dim=word_embeddings.get_embedding_length(), hidden_dim=100, output_dim=1, word_embeddings=word_embeddings)
-
-        # Train and evaluate the DAN model
-        print('\nTraining DAN Model:')
-        dan_train_accuracy, dan_test_accuracy = experiment(model, train_loader, test_loader)
-
-        # Optionally plot training accuracy for DAN
         plt.figure(figsize=(8, 6))
-        plt.plot(dan_train_accuracy, label='DAN Training Accuracy')
+        plt.plot(nn1_train_accuracy, label='DAN Training Accuracy')
         plt.xlabel('Epochs')
         plt.ylabel('Training Accuracy')
         plt.title('Training Accuracy for DAN')
@@ -216,7 +176,7 @@ def main():
 
         # Plot the testing accuracy for DAN
         plt.figure(figsize=(8, 6))
-        plt.plot(dan_test_accuracy, label='DAN Testing Accuracy')
+        plt.plot(nn1_test_accuracy, label='DAN Testing Accuracy')
         plt.xlabel('Epochs')
         plt.ylabel('Dev Accuracy')
         plt.title('Dev Accuracy for DAN')
@@ -227,8 +187,49 @@ def main():
         dan_testing_accuracy_file = 'dan_dev_accuracy.png'
         plt.savefig(dan_testing_accuracy_file)
         print(f"DAN Dev accuracy plot saved as {dan_testing_accuracy_file}\n\n")
+                  
+    elif args.model == "SUBWORDDAN":
+        # Load word embeddings
+        word_embeddings = read_word_embeddings("data/glove.6B.300d-relativized.txt")
+        #word_embeddings = read_word_embeddings("data/glove.6B.300d-relativized.txt")
         
-        '''
+        train_data = SentimentDatasetDAN("data/train.txt", word_embeddings)
+        dev_data = SentimentDatasetDAN("data/dev.txt", word_embeddings)
+        train_loader = DataLoader(train_data, batch_size=16, shuffle=True)
+        test_loader = DataLoader(dev_data, batch_size=16, shuffle=False)
+        
+        # Train and evaluate NN
+        start_time = time.time()
+        print('\n3 layers:')
+        nn1_train_accuracy, nn1_test_accuracy = experiment(NNcustomDAN(word_embeddings.get_embedding_length(), 300, 1, word_embeddings), train_loader, test_loader)
+        
+        plt.figure(figsize=(8, 6))
+        plt.plot(nn1_train_accuracy, label='DAN Training Accuracy')
+        plt.xlabel('Epochs')
+        plt.ylabel('Training Accuracy')
+        plt.title('Training Accuracy for DAN')
+        plt.legend()
+        plt.grid()
+
+        # Save the training accuracy figure
+        dan_training_accuracy_file = 'dan_train_accuracy.png'
+        plt.savefig(dan_training_accuracy_file)
+        print(f"\n\nDAN Training accuracy plot saved as {dan_training_accuracy_file}")
+
+        # Plot the testing accuracy for DAN
+        plt.figure(figsize=(8, 6))
+        plt.plot(nn1_test_accuracy, label='DAN Testing Accuracy')
+        plt.xlabel('Epochs')
+        plt.ylabel('Dev Accuracy')
+        plt.title('Dev Accuracy for DAN')
+        plt.legend()
+        plt.grid()
+
+        # Save the testing accuracy figure
+        dan_testing_accuracy_file = 'dan_dev_accuracy.png'
+        plt.savefig(dan_testing_accuracy_file)
+        print(f"DAN Dev accuracy plot saved as {dan_testing_accuracy_file}\n\n")
+
 
 if __name__ == "__main__":
     main()
